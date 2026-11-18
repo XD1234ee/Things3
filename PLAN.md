@@ -62,12 +62,14 @@ for the workflow only.
 
 ### 2.2 Focus mode
 - A floating, always-on-top panel shows **one** task: its title, its project or area,
-  its notes, and a checklist you can tick off.
+  and its notes. (Things' AppleScript interface doesn't expose checklist items, so
+  showing checklists has to wait for the optional SQLite reader.)
 - A **Pomodoro timer**: 25 min focus and 5 min short break by default, with a 15 min
   long break after every 4 pomodoros. All lengths can be changed. The panel shows
   pomodoros done and estimated for the current task (for example 🍅🍅◻︎). Breaks are
-  offered automatically and can be skipped. Finishing a task early ends the pomodoro and
-  counts it.
+  offered automatically and can be skipped. Finishing a task doesn't stop the timer: the
+  next task takes over the rest of the current pomodoro, and focus time is credited to
+  whichever task was current, second by second.
 - Actions:
   - **Complete** (⌘↩): marks the task done in Things and moves to the next task.
   - **Skip / later** (⌘→): moves the task to the end of the plan.
@@ -195,7 +197,7 @@ Key rules:
 
 ## 6. Delivery phases
 
-### Phase 0: Spike (1–2 days)
+### Phase 0: Spike (1–2 days). *Ready to run: `Scripts/spike.sh`*
 - Script prototypes: read Today, Inbox and Upcoming with AppleScript and JXA, and time
   them on a real library. Complete a task, move a task to Today, and add a checklist item
   through the URL scheme.
@@ -204,10 +206,11 @@ Key rules:
 - **Exit criteria:** a written note on read and write latency, and confirmation that each
   write operation works.
 
-### Phase 1: MVP, the full Plan → Do → Reflect loop at its simplest (about 1 week)
-- Menu bar app, AppleScript reader and writer, Settings with the auth token.
-- An empty-day planner. The idea pool is Things *Today* and *Anytime*. Reorder, add
-  estimates, then Begin Day.
+### Phase 1: MVP, the full Plan → Do → Reflect loop at its simplest (about 1 week). *Code written; needs testing on a Mac*
+- Menu bar app, AppleScript (JXA) reader and writer, Settings. The URL-scheme auth token
+  isn't needed until Phase 2 (checklists and notes).
+- An empty-day planner. The idea pool covers Things *Today*, deadlines, *Inbox* and
+  *Anytime*, with search. Reorder, add estimates, then hold to Begin Day.
 - Focus panel with the Pomodoro timer (focus, short break, long break), Complete, Skip and Open in Things, and the global hotkey.
 - A basic End Day: completed versus planned, and leftovers sent back to Anytime.
 - Local persistence of the plan. Polling and reconciliation.

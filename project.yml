@@ -1,0 +1,56 @@
+# XcodeGen spec. Generate the Xcode project with:  xcodegen generate
+name: Daybreak
+options:
+  bundleIdPrefix: local.daybreak
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+packages:
+  DaybreakCore:
+    path: DaybreakCore
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    from: 2.2.0
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  Daybreak:
+    type: application
+    platform: macOS
+    sources:
+      - path: Daybreak
+    dependencies:
+      - package: DaybreakCore
+      - package: KeyboardShortcuts
+    info:
+      path: Daybreak/Info.plist
+      properties:
+        CFBundleDisplayName: Daybreak
+        LSApplicationCategoryType: public.app-category.productivity
+        LSUIElement: true
+        NSAppleEventsUsageDescription: Daybreak reads your Things lists and marks to-dos done or moves them, so your daily plan stays in sync with Things.
+    entitlements:
+      path: Daybreak/Daybreak.entitlements
+      properties:
+        com.apple.security.automation.apple-events: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: local.daybreak.Daybreak
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_HARDENED_RUNTIME: YES
+        # Set this to your Personal Team ID (Xcode → Settings → Accounts) or pick it in Xcode.
+        DEVELOPMENT_TEAM: ""
+
+schemes:
+  Daybreak:
+    build:
+      targets:
+        Daybreak: all
+    run:
+      config: Debug
