@@ -6,17 +6,38 @@ Working name: **Daybreak**. It's a placeholder and can be renamed.
 
 Things 3 is very good at *capturing* and *organizing* tasks. It doesn't help much with
 *choosing what to do today* or *staying on one task at a time*. Daybreak sits next to
-Things and adds two rituals and one mode:
+Things and adds a daily **Plan → Do → Reflect** loop:
 
-1. **Plan the day.** A short guided morning flow: review candidates, pick a realistic
-   set, put them in order, estimate time, and commit.
-2. **Focus.** A minimal "one task" view that stays on top of other windows, with a timer.
-   Finishing or skipping a task moves you to the next one.
-3. **Shut down.** An end-of-day review: what got done, what rolls over, and a clean slate
-   for tomorrow.
+1. **Plan.** Every day starts **empty**. You choose a few tasks from Things (your pool of
+   ideas), put them in order, and *begin the day*.
+2. **Do.** One task at a time. A focus session fills the screen with the current task and
+   a timer.
+3. **Reflect.** The day has an **end**. A wrap-up shows what you finished and how long you
+   focused. Anything unfinished goes back to the pool, so nothing piles up as overdue. The
+   day is saved to a journal.
 
 Things stays the **source of truth** for tasks. Daybreak only stores what Things doesn't
-have: the plan order, time estimates, focus sessions and history.
+have: the plan order, time estimates, focus sessions and the journal.
+
+### Inspiration: Ivy (semantical.com)
+Ivy is a planner for iPhone and Mac by Semantical. It works from its *own* list of ideas
+and from Apple Reminders. It doesn't connect to Things. Daybreak brings the same loop to
+people who use Things. These are the Ivy ideas we adopt:
+
+| Ivy concept | Daybreak equivalent |
+|---|---|
+| The day starts empty; you choose from your ideas | The planner starts empty. Things lists (Today, Inbox, Anytime, deadlines, tags) are the idea pool. |
+| "Slide to Begin Day" | A deliberate *Begin Day* gesture that locks in the plan and starts focus |
+| Focus Timer fills the screen with one task | A full-screen or floating focus view showing one task only |
+| The day ends; leftovers become ideas again and nothing is overdue | *End Day*: leftovers leave Things Today (back to Anytime) by default, so Today doesn't keep growing |
+| Wrap-up and journal | A summary of completed tasks and focus time, plus a short note, saved to a journal |
+| Calendar and Reminders integration | EventKit calendar on the planner timeline. Reminders support could come later. |
+| Screen Time "shields" that block distracting apps | A Mac version that blocks distracting apps and sites during focus (see Phase 3) |
+| Live Activity, voice input, Shortcuts | Menu bar item, dictation or quick add, App Intents |
+| Habits (timed or count-based) | Could come later: repeating Things to-dos with a target duration or count |
+
+Daybreak is its own product with its own name and visual design. Ivy is the inspiration
+for the workflow only.
 
 ### Non-goals (v1)
 - Replacing Things (no project or area management, no full task editing).
@@ -26,16 +47,17 @@ have: the plan order, time estimates, focus sessions and history.
 ## 2. Core user flows
 
 ### 2.1 Morning planning (target: under 3 minutes)
-1. **Gather.** Show candidates in groups: Things *Today*, overdue deadlines, *Inbox*,
-   tasks with a deadline in the next 3 days, and (optionally) tasks tagged `#next`.
-2. **Pick.** Click or press a key to add a task to today's plan or leave it out.
-   Things *Today* items are pre-selected.
-3. **Order and estimate.** Drag to reorder. Give each task an estimate (15m, 30m, 1h,
-   2h, or a custom value). A capacity bar compares the planned total with the free time
-   left today, which can come from the calendar.
-4. **Commit.** Tasks you picked are moved to Things *Today*. Tasks you left out of
-   *Today* can be deferred ("This Evening", "Tomorrow", or "Someday"). The plan is saved
-   in Daybreak.
+1. **An empty day.** The plan starts blank. A short prompt asks "What will make today a
+   good day?" The advice is to pick about 3–6 tasks.
+2. **Browse the idea pool.** Candidates come from Things, in groups: *Today*, overdue or
+   soon-due deadlines, *Inbox*, *Anytime* (filterable by area, project or tag), and
+   optionally `#next`. **Nothing is pre-selected**, because choosing each task is the point.
+   A search box filters across all groups.
+3. **Pick, order and estimate.** Add tasks with a click or the keyboard, then drag them
+   into order. Give each one an estimate (15m, 30m, 1h, 2h, or a custom value). A
+   capacity bar and a timeline of today's calendar events show whether the plan fits.
+4. **Begin Day.** A deliberate gesture (slide or press and hold) commits the plan. Tasks
+   you picked move to Things *Today*. The first focus session is offered right away.
 
 ### 2.2 Focus mode
 - A floating, always-on-top panel shows **one** task: its title, its project or area,
@@ -51,11 +73,20 @@ have: the plan order, time estimates, focus sessions and history.
 - A global hotkey (for example ⌥Space) shows or hides the focus panel.
 - Optional: turn on a macOS Focus (Do Not Disturb) during sessions through a Shortcut.
 
-### 2.3 End-of-day shutdown
-- Shows completed and planned tasks, focus time per task, and estimated versus actual time.
-- Leftover tasks can stay in Today, move to Tomorrow, or move to Someday.
-- An optional single-line journal note.
-- A daily streak and history view (later phase).
+- **Full-screen mode** (Ivy's style): the task and the timer only, on a calm background.
+  Esc shrinks it to the floating panel.
+
+### 2.3 End Day and wrap-up
+- **End Day** is a deliberate action. Daybreak also reminds you at a time you choose.
+- The wrap-up shows completed and planned tasks, total focus time, focus time per task,
+  and estimated versus actual time.
+- **Nothing becomes overdue.** By default, unfinished planned tasks leave Things *Today*
+  and go back to *Anytime*, where they wait as ideas. You can instead keep a task in
+  Today, move it to Tomorrow, or move it to Someday. Deadlines in Things are left alone.
+- A one-line reflection ("How did today go?") is saved with the day's summary in the
+  **journal**.
+- A journal and history view lists past days, focus time and tasks completed. Streaks
+  are optional.
 
 ## 3. Integrating with Things 3
 
@@ -167,23 +198,32 @@ Key rules:
 - **Exit criteria:** a written note on read and write latency, and confirmation that each
   write operation works.
 
-### Phase 1: MVP, "one task at a time" (about 1 week)
+### Phase 1: MVP, the full Plan → Do → Reflect loop at its simplest (about 1 week)
 - Menu bar app, AppleScript reader and writer, Settings with the auth token.
-- A simple planner: Things *Today* only, reorder, estimates, commit.
+- An empty-day planner. The idea pool is Things *Today* and *Anytime*. Reorder, add
+  estimates, then Begin Day.
 - Focus panel with a countdown timer, Complete, Skip and Open in Things, and the global hotkey.
+- A basic End Day: completed versus planned, and leftovers sent back to Anytime.
 - Local persistence of the plan. Polling and reconciliation.
 - **Exit criteria:** you can use it for a whole workday without opening Things to tick tasks off.
 
-### Phase 2: Full morning ritual (about 1 week)
-- Candidate groups: Inbox, overdue, upcoming deadlines, `#next` tag.
+### Phase 2: Full planning ritual (about 1 week)
+- The complete idea pool: Inbox, deadlines, filters by area, project or tag, and search.
 - Defer actions (Tomorrow, Evening, Someday) written back to Things.
 - EventKit capacity bar and a timeline of the day.
-- Notifications: plan reminder, time's up, breaks.
+- Full-screen focus mode.
+- Notifications: plan reminder, time's up, breaks, End Day reminder.
 
-### Phase 3: Shutdown and history (about 1 week)
-- Shutdown review and rollover.
-- History of focus sessions, and estimated versus actual time.
-- App Intents and Shortcuts, plus the optional macOS Focus trigger.
+### Phase 3: Reflect, journal and shields (about 1–2 weeks)
+- A full wrap-up screen, the reflection prompt and the journal or history view.
+- Estimated versus actual time.
+- **Distraction shields:** during a focus session, apps and sites from a list you choose
+  are blocked or covered. There are two ways to do this. One is Apple's Screen Time
+  frameworks (`FamilyControls` and `ManagedSettings`); first check whether they're
+  available on macOS and what they require. The other is a fallback: watch the active app
+  with `NSWorkspace` and hide it or show a soft overlay, plus an optional macOS Focus
+  filter through Shortcuts.
+- App Intents and Shortcuts ("Begin Day", "Start focus", "Complete current task", "End Day").
 
 ### Phase 4: Polish and release
 - Optional SQLite fast reader with FSEvents.
@@ -216,10 +256,12 @@ Key rules:
 | Writing to Things brings it to the front | Use `reveal=false` on URLs and prefer AppleScript for silent writes |
 
 ## 9. Open questions
-1. What does the Reddit inspiration post show? (It couldn't be opened from the build
-   environment.) Are there specific features or a visual style to match?
+1. End Day default: should leftovers go back to **Anytime** (Ivy's "nothing is overdue"
+   approach), or stay in Today?
 2. Should time-blocking against the calendar be a core part of v1, or a later add-on?
-3. Distribution: just for you, or shared publicly (Developer ID DMG versus the Mac App Store)?
-4. Should we write tags back to Things (for example `#planned`, or `#focus` on the current
+3. How far should distraction blocking go: a hard block, or a soft nudge?
+4. Should Apple Reminders also be an idea source, or only Things?
+5. Distribution: just for you, or shared publicly (Developer ID DMG versus the Mac App Store)?
+6. Should we write tags back to Things (for example `#planned`, or `#focus` on the current
    task) so the plan also shows up in Things on iPhone?
-5. Timer style: count down from the estimate, Pomodoro, or count up?
+7. Timer style: count down from the estimate, Pomodoro, or count up?
