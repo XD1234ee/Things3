@@ -230,7 +230,7 @@ final class AppModel: ObservableObject {
     // MARK: - Windows
 
     func open(_ window: WindowID) {
-        openWindowAction?(id: window.rawValue)
+        openWindowAction?.callAsFunction(id: window.rawValue)
         NSApp.activate(ignoringOtherApps: true)
     }
 
