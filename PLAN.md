@@ -31,8 +31,8 @@ people who use Things. These are the Ivy ideas we adopt:
 | Focus Timer fills the screen with one task | A full-screen or floating focus view showing one task only |
 | The day ends; leftovers become ideas again and nothing is overdue | *End Day*: leftovers leave Things Today (back to Anytime) by default, so Today doesn't keep growing |
 | Wrap-up and journal | A summary of completed tasks and focus time, plus a short note, saved to a journal |
-| Calendar and Reminders integration | EventKit calendar on the planner timeline. Reminders support could come later. |
-| Screen Time "shields" that block distracting apps | A Mac version that blocks distracting apps and sites during focus (see Phase 3) |
+| Calendar and Reminders integration | EventKit calendar (read-only) on the planner timeline. **Things is the only task source.** Daybreak doesn't use Reminders. |
+| Screen Time "shields" that block distracting apps | **Gentle nudges** instead of hard blocks: if you switch to a distracting app during a pomodoro, a small reminder appears (see Phase 3) |
 | Live Activity, voice input, Shortcuts | Menu bar item, dictation or quick add, App Intents |
 | Habits (timed or count-based) | Could come later: repeating Things to-dos with a target duration or count |
 
@@ -54,15 +54,20 @@ for the workflow only.
    optionally `#next`. **Nothing is pre-selected**, because choosing each task is the point.
    A search box filters across all groups.
 3. **Pick, order and estimate.** Add tasks with a click or the keyboard, then drag them
-   into order. Give each one an estimate (15m, 30m, 1h, 2h, or a custom value). A
-   capacity bar and a timeline of today's calendar events show whether the plan fits.
+   into order. Estimate each one in **pomodoros** (🍅 × 1–8, where 1 = 25 min). A
+   capacity bar (pomodoros planned versus pomodoros that fit in the free time left today)
+   and a timeline of today's calendar events show whether the plan fits.
 4. **Begin Day.** A deliberate gesture (slide or press and hold) commits the plan. Tasks
    you picked move to Things *Today*. The first focus session is offered right away.
 
 ### 2.2 Focus mode
 - A floating, always-on-top panel shows **one** task: its title, its project or area,
   its notes, and a checklist you can tick off.
-- A timer counts down from the estimate, or runs as a Pomodoro (25/5).
+- A **Pomodoro timer**: 25 min focus and 5 min short break by default, with a 15 min
+  long break after every 4 pomodoros. All lengths can be changed. The panel shows
+  pomodoros done and estimated for the current task (for example 🍅🍅◻︎). Breaks are
+  offered automatically and can be skipped. Finishing a task early ends the pomodoro and
+  counts it.
 - Actions:
   - **Complete** (⌘↩): marks the task done in Things and moves to the next task.
   - **Skip / later** (⌘→): moves the task to the end of the plan.
@@ -80,9 +85,10 @@ for the workflow only.
 - **End Day** is a deliberate action. Daybreak also reminds you at a time you choose.
 - The wrap-up shows completed and planned tasks, total focus time, focus time per task,
   and estimated versus actual time.
-- **Nothing becomes overdue.** By default, unfinished planned tasks leave Things *Today*
-  and go back to *Anytime*, where they wait as ideas. You can instead keep a task in
-  Today, move it to Tomorrow, or move it to Someday. Deadlines in Things are left alone.
+- **Nothing becomes overdue.** Unfinished planned tasks **always go back to Things
+  *Anytime*** (they leave Today) and wait there as ideas. Each task can be changed to
+  Tomorrow or Someday during the wrap-up, but there's no option to keep tasks in Today.
+  Every morning starts empty. Deadlines in Things are left alone.
 - A one-line reflection ("How did today go?") is saved with the day's summary in the
   **journal**.
 - A journal and history view lists past days, focus time and tasks completed. Streaks
@@ -135,8 +141,8 @@ deadline, checklist items, creation date`, plus the order within Today (from the
   estimate, status), `FocusSession` (start, end, task ID, outcome) and `Settings`.
 - **Calendar (optional):** EventKit for read-only access to today's events, used to
   compute free time and show a timeline in the planner.
-- **Notifications:** UserNotifications for "time's up", "break over" and reminders to
-  plan or shut down.
+- **Notifications:** UserNotifications for "pomodoro done", "break over" and reminders
+  to plan or end the day.
 - **Shortcuts / App Intents:** "Start focus", "Complete current task", "What am I
   working on?" These also let macOS Focus modes and Stream Deck trigger Daybreak.
 - **Dependencies (minimal):** [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts)
@@ -174,14 +180,14 @@ Key rules:
 
 - **Automation permission:** set `NSAppleEventsUsageDescription` in Info.plist. macOS
   asks the user once, the first time Daybreak controls Things.
-- **Sandboxing:**
-  - v1 is distributed **outside the Mac App Store**. It's signed with Developer ID,
-    notarized, uses the hardened runtime with the `com.apple.security.automation.apple-events`
-    entitlement, and ships as a DMG, optionally with Sparkle for updates. This keeps the
-    SQLite reader possible and avoids App Store review risk around controlling another app.
-  - Later, a Mac App Store build is possible if the SQLite reader is dropped. It would use
-    `com.apple.security.scripting-targets` (or a temporary-exception entitlement) for
-    `com.culturedcode.ThingsMac`.
+- **Distribution: personal use only, for now.** The app is built and run from Xcode
+  with your free Apple ID "Personal Team" signing, or archived and signed ad hoc and
+  copied to `/Applications`. It isn't sandboxed and uses the hardened runtime with the
+  `com.apple.security.automation.apple-events` entitlement. You don't need a paid
+  Developer account, notarization, Sparkle or the App Store.
+  - If you share it later, add Developer ID signing, notarization and a DMG. A Mac App
+    Store build would mean dropping the SQLite reader and using
+    `com.apple.security.scripting-targets`.
 - **Full Disk Access** is needed only if the user turns on the SQLite reader. An
   onboarding screen explains why.
 - **Onboarding checklist:** Things is installed → grant Automation → paste the Things URL
@@ -202,7 +208,7 @@ Key rules:
 - Menu bar app, AppleScript reader and writer, Settings with the auth token.
 - An empty-day planner. The idea pool is Things *Today* and *Anytime*. Reorder, add
   estimates, then Begin Day.
-- Focus panel with a countdown timer, Complete, Skip and Open in Things, and the global hotkey.
+- Focus panel with the Pomodoro timer (focus, short break, long break), Complete, Skip and Open in Things, and the global hotkey.
 - A basic End Day: completed versus planned, and leftovers sent back to Anytime.
 - Local persistence of the plan. Polling and reconciliation.
 - **Exit criteria:** you can use it for a whole workday without opening Things to tick tasks off.
@@ -214,22 +220,24 @@ Key rules:
 - Full-screen focus mode.
 - Notifications: plan reminder, time's up, breaks, End Day reminder.
 
-### Phase 3: Reflect, journal and shields (about 1–2 weeks)
+### Phase 3: Reflect, journal and distraction nudges (about 1–2 weeks)
 - A full wrap-up screen, the reflection prompt and the journal or history view.
 - Estimated versus actual time.
-- **Distraction shields:** during a focus session, apps and sites from a list you choose
-  are blocked or covered. There are two ways to do this. One is Apple's Screen Time
-  frameworks (`FamilyControls` and `ManagedSettings`); first check whether they're
-  available on macOS and what they require. The other is a fallback: watch the active app
-  with `NSWorkspace` and hide it or show a soft overlay, plus an optional macOS Focus
-  filter through Shortcuts.
+- **Distraction nudges:** the user keeps a list of distracting apps. During a pomodoro,
+  Daybreak watches the frontmost app with
+  `NSWorkspace.didActivateApplicationNotification`. When a listed app comes to the front,
+  a small non-blocking banner appears near the focus panel ("You're focusing on *X* · 14:32
+  left") with *Back to task* and *Allow 5 min* buttons. Nothing is blocked or hidden.
+  Distracting websites would need browser access through AppleScript, so they're left
+  out of v1. An optional Shortcut can turn on a macOS Focus mode during pomodoros.
 - App Intents and Shortcuts ("Begin Day", "Start focus", "Complete current task", "End Day").
 
 ### Phase 4: Polish and release
 - Optional SQLite fast reader with FSEvents.
 - Onboarding, empty states, error handling when Things is closed, dark mode, accessibility
   (VoiceOver, keyboard-only use).
-- Signing, notarization, Sparkle, a landing page or README with screenshots.
+- A README with build-and-run steps for your own Mac. (Signing, notarization and
+  updates can wait until you want to share the app.)
 
 ## 7. Testing strategy
 - **Unit tests:** `PlanService`, reconciliation and the timer engine, tested against
@@ -255,13 +263,15 @@ Key rules:
 | Missing or wrong auth token | Detect URL-scheme failures and guide the user to the Things setting |
 | Writing to Things brings it to the front | Use `reveal=false` on URLs and prefer AppleScript for silent writes |
 
-## 9. Open questions
-1. End Day default: should leftovers go back to **Anytime** (Ivy's "nothing is overdue"
-   approach), or stay in Today?
-2. Should time-blocking against the calendar be a core part of v1, or a later add-on?
-3. How far should distraction blocking go: a hard block, or a soft nudge?
-4. Should Apple Reminders also be an idea source, or only Things?
-5. Distribution: just for you, or shared publicly (Developer ID DMG versus the Mac App Store)?
-6. Should we write tags back to Things (for example `#planned`, or `#focus` on the current
-   task) so the plan also shows up in Things on iPhone?
-7. Timer style: count down from the estimate, Pomodoro, or count up?
+## 9. Decisions (confirmed)
+1. **End Day:** unfinished tasks go back to **Anytime**.
+2. **Distractions:** nudge only, never a hard block.
+3. **Task source:** **only Things**. No Reminders.
+4. **Distribution:** **personal use for now**, built locally in Xcode.
+5. **Timer:** **Pomodoro** (25/5, with a 15 min long break after 4 pomodoros; all
+   adjustable). Estimates are in pomodoros.
+
+## 10. Still open (sensible defaults chosen; change if you want)
+- Calendar timeline: **read-only display in v1**, with no time-blocking back to the calendar.
+- Writing tags to Things: **no tags in v1**. The plan lives in Daybreak, and the tasks
+  you picked are in Things Today, so Things on iPhone still shows them.
